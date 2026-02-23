@@ -1,7 +1,43 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 def main():
-    pass
+    # Define initial conditions and parameters
+    y0 = 0
+    t0 = 0
+    tf = np.pi/2
+    h = 0.1
+
+    # Euler's method
+    t_euler, y_euler = Euler(f, y0, t0, tf, h)
+
+    # RK4 method
+    t_rk4, y_rk4 = RK4(f, y0, t0, tf, h)
+
+    t_true = np.linspace(t0, tf, 100)
+    y_true = np.tan(t_true)
+
+    # Label intervals of pi/2
+    labels = [r'$0$', r'$\pi/4$', r'$\pi/2$']
+    positions = np.arange(t0, np.pi/2 + np.pi/4, np.pi/4)
+
+    # Print results
+    plt.figure
+    plt.plot(t_euler, y_euler, label='Euler Method',
+                marker = 'o', linestyle = '-.')
+    plt.plot(t_rk4, y_rk4, label='RK4 Method',
+                marker='x', linestyle='--')
+    plt.plot(t_true, y_true, label='True Solution', linestyle='-')
+    plt.xlabel('Time (t)')
+    plt.ylabel('y(t)')
+    plt.title('Numerical Integration of ODE')
+    plt.legend()
+    plt.xticks(positions, labels)
+    plt.ylim(0, 100)
+    plt.grid()
+    plt.show()
+
+
 
 # f if the first order ODE in the form of 
 #        dy/dt = f(t, y)
@@ -46,6 +82,9 @@ def RK4(f, y0, t0, tf, h):
         y[i] = y[i-1] + h*(k1 + 2*k2 + 2*k3 + k4)/6
 
     return t, y
+
+def f(t, y):
+    return y*y + 1
 
 if __name__ == "__main__":
     main()
