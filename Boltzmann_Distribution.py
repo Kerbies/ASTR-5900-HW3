@@ -2,7 +2,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def main():
-    pass
+    # Temperature of surface of star
+    T = 10000
+
+    # Velecity range from 0 to 100,000 m/s
+    v = np.linspace(0, 50000, 1000)
+
+    # Mass of hydrogen atom in kg
+    m = 1.67e-27
+
+    # Plotting the Maxwell-Boltzmann distribution
+    plt.figure()
+    plt.plot(v, Maxwell_Boltzmann_Distribution(v, T, 1.67e-27), label='Maxwell-Boltzmann Distribution')
+    plt.xlabel('Speed (m/s)')
+    plt.ylabel('Probability Density')
+    plt.title('Maxwell-Boltzmann Distribution for Hydrogen at 10000 K')
+    plt.legend()
+    plt.show()
+
 
 # T --- Tempurature in Kelvin
 # m --- Mass of the particle in kg
