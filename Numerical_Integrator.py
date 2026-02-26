@@ -1,11 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 
 def main():
     # Define initial conditions and parameters
     y0 = 0
     t0 = 0
-    tf = np.pi/2
+    tf = 3*np.pi/4
     h = 0.1
 
     # Euler's method
@@ -18,8 +19,8 @@ def main():
     y_true = np.tan(t_true)
 
     # Label intervals of pi/2
-    labels = [r'$0$', r'$\pi/4$', r'$\pi/2$']
-    positions = np.arange(t0, np.pi/2 + np.pi/4, np.pi/4)
+    labels = [r'$0$', r'$\pi/4$', r'$\pi/2$', r'$3\pi/4$']
+    positions = np.arange(t0, 3*np.pi/4 + np.pi/4, np.pi/4)
 
     # Print results
     plt.figure
@@ -37,7 +38,67 @@ def main():
     plt.grid()
     plt.show()
 
+    # Convergence Study 
+    y0 = 0
+    t0 = 0
+    tf = 0.5
+    y_true = np.tan(tf)
+    h_values = np.array([0.75, 0.5, 0.25, 0.1, 0.05, 0.01, 0.005, 0.001])
 
+    # Global accumulated error
+    y_global_euler = np.zeros_like(h_values)
+    y_global_rk4   = np.zeros_like(h_values)
+
+    # Enumerate h values
+    for i, h in enumerate(h_values):
+        t_euler, y_euler = Euler(f, y0, t0, tf, h)
+        t_rk4, y_rk4 = RK4(f, y0, t0, tf, h)
+
+        # Get last value of the numerical solution
+        y_global_euler[i] = y_euler[-1]
+        y_global_rk4[i]   = y_rk4[-1]
+
+    # Find Global errors
+    length = len(h_values)
+    errors_euler = np.zeros(length)
+    errors_rk4   = np.zeros(length)
+
+    for i in range(length):
+        errors_euler[i] = abs(y_global_euler[-1] - y_global_euler[i])
+        errors_rk4[i]   = abs(y_global_rk4[-1]   - y_global_rk4[i])
+
+    # Plot convergence
+    plt.figure()
+    plt.loglog(1/h_values[0:length-1], errors_euler[0:length-1], label='Euler Error', marker='o')
+    plt.loglog(1/h_values[0:length-1], errors_rk4[0:length-1]  , label='RK4 Error'  , marker='x')
+    plt.xlabel('Time Step (1/h)')
+    plt.ylabel('Global Error')
+    plt.title('Convergence Study')
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+    # Make Table of results
+    data = {
+        'h': h_values,
+        'Euler Error': errors_euler,
+        'RK4 Error': errors_rk4
+    }
+    df = pd.DataFrame(data)
+    print(df)
+
+    # Compute slopes
+    fit_range = np.arange(3, 7)   # adjust as needed
+
+    slope_euler = np.polyfit(np.log(h_values[fit_range]),
+                         np.log(errors_euler[fit_range]), 1)[0]
+
+    slope_rk4 = np.polyfit(np.log(h_values[fit_range]),
+                       np.log(errors_rk4[fit_range]), 1)[0]
+
+    # Print to Screen
+    print("Euler order ≈", slope_euler)
+    print("RK4 order ≈", slope_rk4)
 
 # f if the first order ODE in the form of 
 #        dy/dt = f(t, y)
@@ -46,8 +107,11 @@ def main():
 # h        --- time step
 def Euler(f, y0, t0, tf, h):
 
+    # Number of steps
+    N = int((tf - t0)/h)
+
     # Defines the time array
-    t = np.arange(t0, tf+h, h)
+    t = np.linspace(t0, tf, N+1)
     
     # Initialize the solution array
     y = np.zeros_like(t)
@@ -63,9 +127,12 @@ def Euler(f, y0, t0, tf, h):
 
 def RK4(f, y0, t0, tf, h):
 
+    # Number of steps
+    N = int((tf - t0)/h)
+
     # Defines the time array
-    t = np.arange(t0, tf+h, h)
-    
+    t = np.linspace(t0, tf, N+1)
+
     # Initialize the solution array
     y = np.zeros_like(t)
 
@@ -84,7 +151,7 @@ def RK4(f, y0, t0, tf, h):
     return t, y
 
 def f(t, y):
-    return y*y + 1
+    return y**2 + 1
 
 if __name__ == "__main__":
     main()
