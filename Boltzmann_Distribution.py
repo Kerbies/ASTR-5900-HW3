@@ -26,13 +26,14 @@ def main():
     
     v_lb = np.sqrt(2 * delta_E / m)  # Lower bound velocity in m/s
 
+
     # Step Size of the Integral
-    dv = 0.1
+    dv = 0.01
 
     # Numerical Integration of the Maxwell-Boltzmann distribution
-    # 70000 is where the integral will be 0 for all higher velocities, so it is "infinity" for numerical purposes
+    # 60000 is where the integral will be 0 for all higher velocities, so it is "infinity" for numerical purposes
     # The integral is initally 0, so we can set the initial condition to 0
-    _, Population = RK4(f, 0, v_lb, 70000, dv)
+    _, Population = RK4(f, 0, v_lb, 100000, dv)
 
     print("The fraction of hydrogen atoms that can escape the star is approximately: ", Population[-1])
 
