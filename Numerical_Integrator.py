@@ -7,7 +7,7 @@ def main():
     y0 = 0
     t0 = 0
     tf = 3*np.pi/4
-    h = 0.1
+    h = 0.25
 
     # Euler's method
     t_euler, y_euler = Euler(f, y0, t0, tf, h)
@@ -22,7 +22,7 @@ def main():
     labels = [r'$0$', r'$\pi/4$', r'$\pi/2$', r'$3\pi/4$']
     positions = np.arange(t0, 3*np.pi/4 + np.pi/4, np.pi/4)
 
-    # Print results
+    # Plot results
     plt.figure
     plt.plot(t_euler, y_euler, label='Euler Method',
                 marker = 'o', linestyle = '-.')
@@ -34,7 +34,7 @@ def main():
     plt.title('Numerical Integration of ODE')
     plt.legend()
     plt.xticks(positions, labels)
-    plt.ylim(0, 100)
+    plt.ylim(-60, 60)
     plt.grid()
     plt.show()
 
@@ -42,10 +42,14 @@ def main():
     y0 = 0
     t0 = 0
     tf = 0.5
+
+    # True solution at tf
     y_true = np.tan(tf)
+
+    # h values
     h_values = np.array([0.75, 0.5, 0.25, 0.1, 0.05, 0.01, 0.005, 0.001])
 
-    # Global accumulated error
+    # Global accumulated error arrays
     y_global_euler = np.zeros_like(h_values)
     y_global_rk4   = np.zeros_like(h_values)
 
@@ -64,8 +68,8 @@ def main():
     errors_rk4   = np.zeros(length)
 
     for i in range(length):
-        errors_euler[i] = abs(y_global_euler[-1] - y_global_euler[i])
-        errors_rk4[i]   = abs(y_global_rk4[-1]   - y_global_rk4[i])
+        errors_euler[i] = abs(y_global_euler[-1] - y_global_euler[i])/abs(y_global_euler[-1])
+        errors_rk4[i]   = abs(y_global_rk4[-1]   - y_global_rk4[i])/abs(y_global_rk4[-1])
 
     # Plot convergence
     plt.figure()
